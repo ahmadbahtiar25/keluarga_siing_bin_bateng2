@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keluarga Besar H. Si'ing Bin Bateng</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+  :root {
+    --hijau: #1a6b3c; --hijau-mid: #2d8a52; --hijau-light: #e8f5ee;
+    --emas: #c9a84c; --emas-light: #fdf6e3;
+    --putih: #ffffff; --abu: #f5f5f3; --teks: #1a1a1a; --teks2: #555;
+    --border: rgba(0,0,0,0.1); --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--abu); color: var(--teks); min-height: 100vh; font-size: 14px; }
+
+  /* LOGIN */
+  #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f4026 0%, #1a6b3c 50%, #2d8a52 100%); padding: 1rem; }
+  .login-card { background: white; border-radius: 20px; padding: 2.5rem 2rem; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .login-logo { text-align: center; margin-bottom: 1.5rem; }
+  .login-logo .logo-circle { width: 70px; height: 70px; background: linear-gradient(135deg, var(--hijau), var(--emas)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 28px; }
+  .login-logo h1 { font-family: 'Amiri', serif; font-size: 18px; color: var(--hijau); line-height: 1.3; }
+  .login-logo p { font-size: 12px; color: var(--teks2); margin-top: 4px; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--teks2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.2s; outline: none; }
+  .form-group input:focus { border-color: var(--hijau); }
+  .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--hijau), var(--hijau-mid)); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+  .btn-login:hover { opacity: 0.9; }
+  .demo-hint { text-align: center; margin-top: 1rem; font-size: 12px; color: var(--teks2); background: var(--hijau-light); padding: 10px; border-radius: 8px; }
+  .demo-hint b { color: var(--hijau); }
+
+  /* APP SHELL */
+  #app { display: none; min-height: 100vh; }
+  .topbar { background: linear-gradient(135deg, #0f4026, #1a6b3c); color: white; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-logo { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .topbar-title { font-family: 'Amiri', serif; font-size: 15px; line-height: 1.2; }
+  .topbar-title small { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; opacity: 0.7; font-weight: 400; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .btn-logout { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: inherit; }
+  .user-badge { font-size: 11px; opacity: 0.8; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; cursor: pointer; border: none; background: none; font-family: inherit; transition: all 0.2s; gap: 3px; }
+  .nav-item .nav-icon { font-size: 20px; }
+  .nav-item .nav-label { font-size: 9px; color: var(--teks2); font-weight: 500; }
+  .nav-item.active .nav-label { color: var(--hijau); font-weight: 600; }
+  .nav-item.active { border-top: 2.5px solid var(--hijau); }
+
+  /* MAIN */
+  .main-content { padding: 1rem; padding-bottom: 80px; max-width: 600px; margin: 0 auto; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
+  .card-header { padding: 1rem 1rem 0.5rem; border-bottom: 1px solid var(--hijau-light); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h3 { font-size: 14px; font-weight: 600; color: var(--hijau); display: flex; align-items: center; gap: 6px; }
+  .card-body { padding: 1rem; }
+
+  /* STAT CARDS */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  .stat-card { background: white; border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); border-left: 4px solid var(--hijau); }
+  .stat-card.emas { border-left-color: var(--emas); }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--hijau); line-height: 1; }
+  .stat-card.emas .stat-num { color: #8a6b00; }
+  .stat-label { font-size: 11px; color: var(--teks2); margin-top: 4px; }
+
+  /* ANGGOTA */
+  .search-box { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; margin-bottom: 1rem; }
+  .search-box:focus { border-color: var(--hijau); }
+  .member-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--hijau-light); }
+  .member-item:last-child { border-bottom: none; }
+  .member-left { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+  .member-name { font-weight: 600; font-size: 14px; }
+  .member-gen { font-size: 11px; color: var(--teks2); }
+  .btn-wa { background: #25D366; color: white; border: none; border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap; }
+  .btn-edit { background: #e8f5ee; color: var(--hijau); border: 1.5px solid var(--hijau); border-radius: 8px; padding: 5px 9px; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+  .btn-edit:hover { background: #c8ebd8; }
+  .btn-hapus { background: #fff0f0; color: #c62828; border: 1.5px solid #e57373; border-radius: 8px; padding: 5px 9px; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+  .btn-hapus:hover { background: #ffd6d6; }
+
+  /* FORUM */
+  .post-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
+  .post-header { padding: 12px 14px 8px; display: flex; align-items: center; gap: 10px; }
+  .post-body { padding: 0 14px 12px; font-size: 14px; line-height: 1.6; }
+  .post-actions { padding: 8px 14px; border-top: 1px solid var(--hijau-light); display: flex; gap: 12px; }
+  .post-action-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--teks2); display: flex; align-items: center; gap: 4px; font-family: inherit; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+  .post-action-btn:hover { background: var(--hijau-light); }
+  .post-action-btn.liked { color: #e53935; }
+  .textarea-box { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 80px; outline: none; }
+  .textarea-box:focus { border-color: var(--hijau); }
+  .btn-primary { background: var(--hijau); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn-secondary { background: var(--hijau-light); color: var(--hijau); border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+  /* KALENDER */
+  .event-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--hijau-light); }
+  .event-item:last-child { border-bottom: none; }
+  .event-date-box { background: var(--hijau); color: white; border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 48px; flex-shrink: 0; }
+  .event-date-box .eday { font-size: 20px; font-weight: 700; line-height: 1; }
+  .event-date-box .emon { font-size: 10px; opacity: 0.85; }
+  .event-title { font-weight: 600; font-size: 14px; }
+  .event-loc { font-size: 12px; color: var(--teks2); margin-top: 3px; }
+  .event-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 999px; margin-top: 5px; font-weight: 600; }
+  .badge-green { background: var(--hijau-light); color: var(--hijau); }
+  .badge-gold { background: var(--emas-light); color: #8a6b00; }
+
+  /* ARISAN */
+  .arisan-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--hijau-light); }
+  .arisan-item:last-child { border-bottom: none; }
+  .status-badge { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+  .status-lunas { background: #e8f5ee; color: #1a6b3c; }
+  .status-belum { background: #fff3e0; color: #e65100; }
+  .pemenang-box { background: linear-gradient(135deg, var(--emas-light), #fff8dc); border: 1.5px solid var(--emas); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; text-align: center; }
+  .pemenang-box .crown { font-size: 28px; }
+  .pemenang-box h4 { font-weight: 700; color: #8a6b00; font-size: 16px; }
+  .pemenang-box p { font-size: 12px; color: var(--teks2); }
+
+  /* KEUANGAN */
+  .saldo-box { background: linear-gradient(135deg, #0f4026, #1a6b3c); color: white; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; text-align: center; }
+  .saldo-label { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
+  .saldo-num { font-size: 30px; font-weight: 700; font-family: 'Amiri', serif; }
+  .trans-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--hijau-light); }
+  .trans-item:last-child { border-bottom: none; }
+  .trans-left { display: flex; align-items: center; gap: 10px; }
+  .trans-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .trans-icon.masuk { background: #e8f5ee; }
+  .trans-icon.keluar { background: #fff3e0; }
+  .trans-desc { font-weight: 600; font-size: 13px; }
+  .trans-date { font-size: 11px; color: var(--teks2); }
+  .trans-amount { font-weight: 700; font-size: 14px; }
+  .trans-amount.masuk { color: var(--hijau); }
+  .trans-amount.keluar { color: #e65100; }
+  .btn-pdf { background: linear-gradient(135deg, var(--emas), #e0a830); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+
+  /* GALERI */
+  .galeri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .galeri-item { aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; }
+  .galeri-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+  .galeri-item:hover img { transform: scale(1.05); }
+  .galeri-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 9px; padding: 4px 6px; line-height: 1.3; }
+  .upload-zone { border: 2px dashed var(--emas); border-radius: var(--radius); padding: 2rem; text-align: center; cursor: pointer; background: var(--emas-light); margin-bottom: 1rem; transition: background 0.2s; }
+  .upload-zone:hover { background: #fff3cc; }
+  .upload-zone p { color: var(--teks2); font-size: 13px; margin-top: 8px; }
+  .upload-zone .upload-icon { font-size: 32px; }
+
+  /* ADMIN */
+  .admin-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .admin-menu-item { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+  .admin-menu-item:hover { border-color: var(--hijau); }
+  .admin-menu-item .menu-icon { font-size: 28px; margin-bottom: 6px; }
+  .admin-menu-item p { font-size: 12px; font-weight: 600; color: var(--hijau); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; }
+  .modal h3 { font-size: 16px; font-weight: 700; color: var(--hijau); margin-bottom: 1rem; }
+  .modal-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--teks2); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 10px 20px; border-radius: 999px; font-size: 13px; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+
+  .section-title { font-size: 13px; font-weight: 700; color: var(--hijau); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
+  select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; margin-bottom: 0.75rem; }
+  input[type=file] { display: none; }
+
+  /* LIGHTBOX */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 400; align-items: center; justify-content: center; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 8px; }
+  .lightbox-close { position: absolute; top: 16px; right: 20px; color: white; font-size: 28px; cursor: pointer; background: none; border: none; }
+
+  @media (max-width: 400px) {
+    .stat-num { font-size: 20px; }
+    .saldo-num { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-circle">🕌</div>
+      <h1>Keluarga Besar<br>H. Si'ing Bin Bateng</h1>
+      <p>Sistem Informasi Keluarga</p>
+    </div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="inp-user" placeholder="Masukkan username..." />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="inp-pass" placeholder="Masukkan password..." />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Masuk →</button>
+    <div class="demo-hint">
+      Admin: <b>admin / admin123</b><br>
+      Anggota: <b>anggota / 1234</b>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">🕌</div>
+      <div class="topbar-title">
+        H. Si'ing Bin Bateng
+        <small>Sistem Informasi Keluarga</small>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="user-badge" id="user-badge"></span>
+      <button class="btn-logout" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num" id="stat-anggota">24</div><div class="stat-label">👥 Total Anggota</div></div>
+        <div class="stat-card emas"><div class="stat-num" id="stat-saldo">Rp 4,5Jt</div><div class="stat-label">💰 Saldo Kas</div></div>
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">📅 Acara Bulan Ini</div></div>
+        <div class="stat-card emas"><div class="stat-num" id="stat-forum">8</div><div class="stat-label">💬 Postingan Baru</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📣 Pengumuman Terbaru</h3></div>
+        <div class="card-body" id="pengumuman-list">
+          <div style="padding:10px;background:var(--hijau-light);border-radius:8px;border-left:3px solid var(--hijau);margin-bottom:8px;">
+            <b style="font-size:13px;">Halal Bihalal 2025</b>
+            <p style="font-size:12px;color:var(--teks2);margin-top:3px;">Insya Allah akan dilaksanakan pada 15 Mei 2025 di kediaman Pak Haji. Harap konfirmasi kehadiran.</p>
+          </div>
+          <div style="padding:10px;background:var(--emas-light);border-radius:8px;border-left:3px solid var(--emas);">
+            <b style="font-size:13px;">Arisan Bulan Mei</b>
+            <p style="font-size:12px;color:var(--teks2);margin-top:3px;">Pembayaran arisan paling lambat tanggal 10 Mei 2025. Rp 100.000/orang.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📅 Acara Terdekat</h3></div>
+        <div class="card-body" style="padding:0.75rem 1rem;">
+          <div class="event-item">
+            <div class="event-date-box"><div class="eday">15</div><div class="emon">MEI</div></div>
+            <div><div class="event-title">Halal Bihalal Keluarga</div><div class="event-loc">📍 Kediaman Pak Haji, Jakarta</div></div>
+          </div>
+          <div class="event-item">
+            <div class="event-date-box" style="background:var(--emas);"><div class="eday">22</div><div class="emon">MEI</div></div>
+            <div><div class="event-title">Pengajian Rutin</div><div class="event-loc">📍 Masjid Al-Ikhlas, Bekasi</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANGGOTA -->
+    <div class="page" id="page-anggota">
+      <input class="search-box" type="text" placeholder="🔍 Cari nama atau generasi..." oninput="filterAnggota(this.value)" />
+      <div class="card" id="anggota-list"></div>
+    </div>
+
+    <!-- FORUM -->
+    <div class="page" id="page-forum">
+      <div class="card" style="padding:1rem;margin-bottom:1rem;">
+        <div class="section-title">✏️ Buat Postingan</div>
+        <textarea class="textarea-box" id="forum-input" placeholder="Tulis sesuatu untuk keluarga..."></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+          <button class="btn-primary" onclick="postForum()">Kirim Postingan</button>
+        </div>
+      </div>
+      <div id="forum-posts"></div>
+    </div>
+
+    <!-- KALENDER -->
+    <div class="page" id="page-kalender">
+      <div class="card">
+        <div class="card-header">
+          <h3>📅 Jadwal Acara Keluarga</h3>
+          <div id="kalender-admin-btn" style="display:none;">
+            <button class="btn-primary" style="padding:6px 12px;font-size:12px;" onclick="openModalAcara()">+ Tambah</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0.5rem 1rem;" id="kalender-list"></div>
+      </div>
+    </div>
+
+    <!-- ARISAN -->
+    <div class="page" id="page-arisan">
+      <div class="pemenang-box">
+        <div class="crown">👑</div>
+        <h4 id="arisan-pemenang-label">Pemenang Bulan April</h4>
+        <p style="font-size:16px;font-weight:700;color:#8a6b00;margin:4px 0;" id="arisan-pemenang-nama">Ibu Rahmah binti Si'ing</p>
+        <p id="arisan-pemenang-nominal">Menerima Rp 2.400.000</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>🔄 Status Pembayaran Bulan Mei</h3>
+          <div id="arisan-admin-btn" style="display:none;gap:6px;">
+            <button class="btn-primary" style="padding:6px 12px;font-size:12px;" onclick="openModal('modal-tambah-arisan')">+ Tambah</button>
+          </div>
+        </div>
+        <div class="card-body" id="arisan-list" style="padding:0.5rem 1rem;"></div>
+      </div>
+    </div>
+
+    <!-- KEUANGAN -->
+    <div class="page" id="page-keuangan">
+      <div class="saldo-box">
+        <div class="saldo-label">Saldo Kas Keluarga</div>
+        <div class="saldo-num" id="saldo-display">Rp 4.550.000</div>
+        <div style="font-size:11px;opacity:0.7;margin-top:6px;" id="saldo-date">Update: 24 April 2025</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <button class="btn-pdf" onclick="downloadPDF()" style="flex:1;justify-content:center;min-width:140px;">📄 Unduh PDF</button>
+        <div id="admin-tambah-trans-btn"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📋 Riwayat Transaksi</h3></div>
+        <div class="card-body" id="trans-list" style="padding:0.5rem 1rem;"></div>
+      </div>
+    </div>
+
+    <!-- GALERI -->
+    <div class="page" id="page-galeri">
+      <div class="upload-zone" onclick="document.getElementById('file-upload').click()">
+        <div class="upload-icon">📸</div>
+        <p><b>Klik untuk upload foto kegiatan</b></p>
+        <p style="font-size:11px;color:#aaa;margin-top:4px;">JPG, PNG, GIF — bisa pilih banyak sekaligus</p>
+      </div>
+      <input type="file" id="file-upload" accept="image/*" onchange="uploadFoto(this)" multiple />
+      <div class="section-title">🖼️ Album Keluarga</div>
+      <div class="galeri-grid" id="galeri-grid"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="card" style="padding:1rem;margin-bottom:1rem;background:linear-gradient(135deg,#0f4026,#1a6b3c);color:white;">
+        <div style="font-size:13px;opacity:0.8;">Panel Khusus</div>
+        <div style="font-size:18px;font-weight:700;margin-top:4px;">Admin Dashboard</div>
+        <div style="font-size:12px;opacity:0.7;margin-top:4px;" id="admin-nama-label"></div>
+      </div>
+      <div class="admin-menu-grid">
+        <div class="admin-menu-item" onclick="openModal('modal-anggota')">
+          <div class="menu-icon">👤</div><p>Tambah Anggota</p>
+        </div>
+        <div class="admin-menu-item" onclick="openModal('modal-acara')">
+          <div class="menu-icon">📅</div><p>Tambah Acara</p>
+        </div>
+        <div class="admin-menu-item" onclick="openModal('modal-trans')">
+          <div class="menu-icon">💰</div><p>Tambah Transaksi</p>
+        </div>
+        <div class="admin-menu-item" onclick="openModal('modal-pengumuman')">
+          <div class="menu-icon">📣</div><p>Kirim Pengumuman</p>
+        </div>
+        <div class="admin-menu-item" onclick="downloadPDF()">
+          <div class="menu-icon">📄</div><p>Unduh Laporan PDF</p>
+        </div>
+        <div class="admin-menu-item" onclick="openModal('modal-arisan')">
+          <div class="menu-icon">🔄</div><p>Kelola Arisan</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="gotoPage('dashboard',this)"><span class="nav-icon">🏠</span><span class="nav-label">Beranda</span></button>
+    <button class="nav-item" onclick="gotoPage('anggota',this)"><span class="nav-icon">👥</span><span class="nav-label">Anggota</span></button>
+    <button class="nav-item" onclick="gotoPage('forum',this)"><span class="nav-icon">💬</span><span class="nav-label">Forum</span></button>
+    <button class="nav-item" onclick="gotoPage('kalender',this)"><span class="nav-icon">📅</span><span class="nav-label">Kalender</span></button>
+    <button class="nav-item" onclick="gotoPage('arisan',this)"><span class="nav-icon">🔄</span><span class="nav-label">Arisan</span></button>
+    <button class="nav-item" onclick="gotoPage('keuangan',this)"><span class="nav-icon">💰</span><span class="nav-label">Kas</span></button>
+    <button class="nav-item" onclick="gotoPage('galeri',this)"><span class="nav-icon">🖼️</span><span class="nav-label">Galeri</span></button>
+    <button class="nav-item" id="nav-admin" onclick="gotoPage('admin',this)" style="display:none;"><span class="nav-icon">⚙️</span><span class="nav-label">Admin</span></button>
+  </nav>
+</div><!-- end app -->
+
+<!-- ===== MODALS ===== -->
+<div class="modal-overlay" id="modal-anggota">
+  <div class="modal">
+    <button class="modal-close" onclick="tutupModalAnggota()">✕</button>
+    <h3 id="modal-anggota-title">👤 Tambah Anggota</h3>
+    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="new-nama" placeholder="Nama lengkap anggota..." /></div>
+    <div class="form-group"><label>Generasi</label>
+      <select id="new-gen">
+        <option>Generasi 1 (Kakek/Nenek)</option>
+        <option>Generasi 2 (Anak)</option>
+        <option>Generasi 3 (Cucu)</option>
+        <option>Generasi 4 (Cicit)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>No. WhatsApp</label><input type="text" id="new-wa" placeholder="08xxxxxxxxxx" /></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" id="btn-simpan-anggota" onclick="tambahAnggota()" style="flex:1;">Simpan</button>
+      <button class="btn-secondary" onclick="tutupModalAnggota()" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-acara">
+  <div class="modal">
+    <button class="modal-close" onclick="tutupModalAcara()">✕</button>
+    <h3 id="modal-acara-title">📅 Tambah Acara</h3>
+    <div class="form-group"><label>Nama Acara</label><input type="text" id="new-acara" placeholder="Nama acara..." /></div>
+    <div class="form-group"><label>Tanggal</label><input type="date" id="new-tanggal" /></div>
+    <div class="form-group"><label>Lokasi</label><input type="text" id="new-lokasi" placeholder="Lokasi acara..." /></div>
+    <div class="form-group"><label>Kategori</label>
+      <select id="new-acara-kat">
+        <option value="badge-green">Wajib Hadir</option>
+        <option value="badge-gold">Rutin</option>
+        <option value="badge-gold">Arisan</option>
+        <option value="badge-green">Besar</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" id="btn-simpan-acara" onclick="simpanAcara()" style="flex:1;">Simpan</button>
+      <button class="btn-secondary" onclick="tutupModalAcara()" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Forum -->
+<div class="modal-overlay" id="modal-edit-forum">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-edit-forum')">✕</button>
+    <h3>✏️ Edit Postingan</h3>
+    <div class="form-group"><label>Isi Postingan</label>
+      <textarea class="textarea-box" id="edit-forum-isi" style="min-height:100px;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" onclick="simpanEditForum()" style="flex:1;">Simpan</button>
+      <button class="btn-secondary" onclick="closeModal('modal-edit-forum')" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-trans">
+  <div class="modal">
+    <button class="modal-close" onclick="tutupModalTrans()">✕</button>
+    <h3 id="modal-trans-title">💰 Tambah Transaksi</h3>
+    <div class="form-group"><label>Jenis</label>
+      <select id="new-jenis"><option value="masuk">Kas Masuk</option><option value="keluar">Kas Keluar</option></select>
+    </div>
+    <div class="form-group"><label>Keterangan</label><input type="text" id="new-ket" placeholder="Keterangan transaksi..." /></div>
+    <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="new-jml" placeholder="0" /></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" id="btn-simpan-trans" onclick="simpanTransaksi()" style="flex:1;">Simpan</button>
+      <button class="btn-secondary" onclick="tutupModalTrans()" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Peserta Arisan -->
+<div class="modal-overlay" id="modal-tambah-arisan">
+  <div class="modal">
+    <button class="modal-close" onclick="tutupModalArisan()">✕</button>
+    <h3 id="modal-arisan-title2">➕ Tambah Peserta Arisan</h3>
+    <div class="form-group"><label>Nama Peserta</label><input type="text" id="new-arisan-nama" placeholder="Nama peserta..." /></div>
+    <div class="form-group"><label>Status Pembayaran</label>
+      <select id="new-arisan-status"><option value="lunas">✅ Lunas</option><option value="belum">⏳ Belum Bayar</option></select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" id="btn-simpan-arisan" onclick="simpanArisan()" style="flex:1;">Simpan</button>
+      <button class="btn-secondary" onclick="tutupModalArisan()" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-pengumuman">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-pengumuman')">✕</button>
+    <h3>📣 Kirim Pengumuman</h3>
+    <div class="form-group"><label>Judul</label><input type="text" id="new-judul-p" placeholder="Judul pengumuman..." /></div>
+    <div class="form-group"><label>Isi Pengumuman</label><textarea class="textarea-box" id="new-isi-p" placeholder="Isi pengumuman..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn-primary" onclick="kirimPengumuman()" style="flex:1;">Kirim</button>
+      <button class="btn-secondary" onclick="closeModal('modal-pengumuman')" style="flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-arisan">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-arisan')">✕</button>
+    <h3>🔄 Kelola Arisan</h3>
+    <p style="font-size:13px;color:var(--teks2);margin-bottom:1rem;">Klik status untuk mengubah pembayaran:</p>
+    <div id="arisan-admin-list"></div>
+    <button class="btn-primary" onclick="closeModal('modal-arisan');showToast('Status arisan diperbarui! ✅');renderArisan();" style="width:100%;margin-top:1rem;">Simpan Perubahan</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const USERS = {
+  admin:   { pass: 'admin123', role: 'admin',   nama: 'Administrator' },
+  anggota: { pass: '1234',     role: 'anggota', nama: 'Anggota Keluarga' }
+};
+let currentUser = null;
+
+const WARNA = ['#1a6b3c','#c9a84c','#e53935','#1565c0','#6a1b9a','#00695c','#bf360c','#4e342e','#37474f','#558b2f'];
+
+let anggotaList = [
+  { nama: "H. Si'ing Bin Bateng",        gen: 'Generasi 1 (Kakek/Nenek)', wa: '6281234567890' },
+  { nama: "Hj. Fatimah binti Umar",      gen: 'Generasi 1 (Kakek/Nenek)', wa: '6281234567891' },
+  { nama: "Ahmad bin Si'ing",            gen: 'Generasi 2 (Anak)',         wa: '6281234567892' },
+  { nama: "Rahmah binti Si'ing",         gen: 'Generasi 2 (Anak)',         wa: '6281234567893' },
+  { nama: "Umar bin Si'ing",             gen: 'Generasi 2 (Anak)',         wa: '6281234567894' },
+  { nama: "Halimah binti Si'ing",        gen: 'Generasi 2 (Anak)',         wa: '6281234567895' },
+  { nama: 'Siti Aminah binti Ahmad',     gen: 'Generasi 3 (Cucu)',         wa: '6281234567896' },
+  { nama: 'Muhammad Faiz bin Ahmad',     gen: 'Generasi 3 (Cucu)',         wa: '6281234567897' },
+  { nama: "Nur Aisyah binti Umar",       gen: 'Generasi 3 (Cucu)',         wa: '6281234567898' },
+  { nama: 'Abdullah bin Umar',           gen: 'Generasi 3 (Cucu)',         wa: '6281234567899' },
+  { nama: 'Khadijah binti Ahmad',        gen: 'Generasi 3 (Cucu)',         wa: '6281234567800' },
+  { nama: 'Yusuf bin Ahmad',             gen: 'Generasi 3 (Cucu)',         wa: '6281234567801' },
+];
+
+let forumData = [
+  { user: "Ahmad bin Si'ing", waktu: '2 jam lalu',  isi: "Assalamualaikum keluarga, jangan lupa persiapan Halal Bihalal ya! Mohon konfirmasi kehadiran ke saya.", likes: 5, liked: false, komentar: ['Siap Pak Ahmad! Kami hadir insya Allah 🙏', 'Alhamdulillah, ditunggu!'] },
+  { user: 'Siti Aminah',      waktu: '5 jam lalu',  isi: 'Subhanallah, cuaca Bogor sangat sejuk hari ini. Semoga semua keluarga dalam keadaan sehat selalu ya! 🤲', likes: 8, liked: false, komentar: ['Aamiin ya Rabb 🙏'] },
+  { user: "Nur Aisyah",       waktu: 'Kemarin',     isi: "Masyaallah, baru saja mendapat berita gembira. Alhamdulillah, kami sudah tiba dengan selamat di tanah air. Terima kasih atas doa keluarga semua 😊", likes: 12, liked: false, komentar: ['Alhamdulillah, selamat datang kembali!', 'Syukurlah, kangen sama kalian 😊'] },
+];
+
+let transaksiData = [
+  { jenis: 'masuk',  ket: 'Iuran bulanan April',          jml: 2400000, tgl: '01 Apr 2025' },
+  { jenis: 'masuk',  ket: "Donasi Pak Ahmad",              jml:  500000, tgl: '05 Apr 2025' },
+  { jenis: 'keluar', ket: 'Konsumsi Pengajian',            jml:  300000, tgl: '10 Apr 2025' },
+  { jenis: 'keluar', ket: 'Cetak undangan Halal Bihalal',  jml:  150000, tgl: '15 Apr 2025' },
+  { jenis: 'masuk',  ket: 'Iuran bulanan Mei',             jml: 2400000, tgl: '01 Mei 2025' },
+  { jenis: 'keluar', ket: 'Dekorasi Halal Bihalal',        jml:  300000, tgl: '12 Mei 2025' },
+];
+
+let arisanData = [
+  { nama: "Ahmad bin Si'ing",        status: 'lunas' },
+  { nama: "Rahmah binti Si'ing",     status: 'lunas' },
+  { nama: "Umar bin Si'ing",         status: 'belum' },
+  { nama: 'Siti Aminah binti Ahmad', status: 'lunas' },
+  { nama: 'Muhammad Faiz bin Ahmad', status: 'belum' },
+  { nama: 'Nur Aisyah binti Umar',   status: 'lunas' },
+  { nama: 'Abdullah bin Umar',       status: 'belum' },
+  { nama: 'Khadijah binti Ahmad',    status: 'lunas' },
+];
+
+let galeriData = [
+  { url: 'https://placehold.co/300x300/1a6b3c/white?text=Halal+Bihalal',  label: 'Halal Bihalal 2024' },
+  { url: 'https://placehold.co/300x300/c9a84c/white?text=Pengajian',      label: 'Pengajian Bulanan'  },
+  { url: 'https://placehold.co/300x300/0f4026/white?text=Reuni+2023',     label: 'Reuni 2023'         },
+  { url: 'https://placehold.co/300x300/2d8a52/white?text=Arisan',         label: 'Arisan Keluarga'    },
+  { url: 'https://placehold.co/300x300/8a6b00/white?text=Lebaran',        label: 'Lebaran 1446H'      },
+  { url: 'https://placehold.co/300x300/c9a84c/white?text=Foto+Keluarga',  label: 'Foto Bersama'       },
+];
+
+// ===== AUTH =====
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  if (USERS[u] && USERS[u].pass === p) {
+    currentUser = { username: u, ...USERS[u] };
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-badge').textContent = '👤 ' + currentUser.nama;
+    if (currentUser.role === 'admin') {
+      document.getElementById('nav-admin').style.display = 'flex';
+      document.getElementById('admin-nama-label').textContent = 'Selamat datang, ' + currentUser.nama;
+      // admin trans btn now handled by renderTransaksi()
+    }
+    initApp();
+  } else {
+    showToast('❌ Username atau password salah!');
+  }
+}
+
+document.getElementById('inp-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('nav-admin').style.display = 'none';
+  document.getElementById('admin-tambah-trans-btn').innerHTML = '';
+  gotoPage('dashboard', document.querySelector('.nav-item'));
+}
+
+// ===== NAVIGATION =====
+function gotoPage(pg, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + pg).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== INIT =====
+function initApp() {
+  renderAnggota();
+  renderForum();
+  renderKalender();
+  renderArisan();
+  renderTransaksi();
+  renderGaleri();
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-anggota').textContent = anggotaList.length;
+  document.getElementById('stat-forum').textContent = forumData.length;
+  const masuk  = transaksiData.filter(t=>t.jenis==='masuk').reduce((a,t)=>a+t.jml,0);
+  const keluar = transaksiData.filter(t=>t.jenis==='keluar').reduce((a,t)=>a+t.jml,0);
+  const saldo  = masuk - keluar;
+  const fmt = saldo >= 1000000
+    ? 'Rp ' + (saldo/1000000).toFixed(1) + 'Jt'
+    : 'Rp ' + saldo.toLocaleString('id-ID');
+  document.getElementById('stat-saldo').textContent = fmt;
+  document.getElementById('saldo-display').textContent = 'Rp ' + saldo.toLocaleString('id-ID');
+}
+
+// ===== HELPERS =====
+function inisial(nama) { return nama.split(' ').map(w=>w[0]).filter(c=>/[A-Za-z]/.test(c)).slice(0,2).join('').toUpperCase(); }
+
+// ===== ANGGOTA =====
+let editIndex = null;
+
+function renderAnggota(list) {
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  const data = list || anggotaList;
+  const html = data.map((a,i) => {
+    // find real index in anggotaList when filtered
+    const realIdx = anggotaList.indexOf(a) !== -1 ? anggotaList.indexOf(a) : i;
+    const adminBtns = isAdmin ? `
+      <div style="display:flex;gap:4px;">
+        <button class="btn-edit" onclick="bukaEditAnggota(${realIdx})" title="Edit">✏️</button>
+        <button class="btn-hapus" onclick="hapusAnggota(${realIdx})" title="Hapus">🗑️</button>
+        <button class="btn-wa" onclick="window.open('https://wa.me/${a.wa}','_blank')">💬 WA</button>
+      </div>` : `<button class="btn-wa" onclick="window.open('https://wa.me/${a.wa}','_blank')">💬 WA</button>`;
+    return `
+    <div class="member-item">
+      <div class="member-left">
+        <div class="avatar" style="background:${WARNA[realIdx%WARNA.length]}">${inisial(a.nama)}</div>
+        <div>
+          <div class="member-name">${a.nama}</div>
+          <div class="member-gen">${a.gen}</div>
+          <div style="font-size:10px;color:#aaa;">${a.wa}</div>
+        </div>
+      </div>
+      ${adminBtns}
+    </div>`;
+  }).join('') || '<div style="padding:1rem;text-align:center;color:var(--teks2);">Tidak ditemukan</div>';
+  document.getElementById('anggota-list').innerHTML = html;
+}
+
+function filterAnggota(q) {
+  renderAnggota(anggotaList.filter(a =>
+    a.nama.toLowerCase().includes(q.toLowerCase()) ||
+    a.gen.toLowerCase().includes(q.toLowerCase())
+  ));
+}
+
+function tambahAnggota() {
+  const nama = document.getElementById('new-nama').value.trim();
+  const gen  = document.getElementById('new-gen').value;
+  const wa   = document.getElementById('new-wa').value.trim().replace(/^0/,'62');
+  if (!nama) return showToast('Nama tidak boleh kosong!');
+
+  if (editIndex !== null) {
+    // MODE EDIT
+    anggotaList[editIndex] = { nama, gen, wa: wa||anggotaList[editIndex].wa };
+    editIndex = null;
+    document.getElementById('modal-anggota-title').textContent = '👤 Tambah Anggota';
+    document.getElementById('btn-simpan-anggota').textContent = 'Simpan';
+    showToast('✅ Data anggota berhasil diperbarui!');
+  } else {
+    // MODE TAMBAH
+    anggotaList.push({ nama, gen, wa: wa||'6281234567800' });
+    showToast('✅ Anggota berhasil ditambahkan!');
+  }
+
+  closeModal('modal-anggota');
+  renderAnggota();
+  updateStats();
+  document.getElementById('new-nama').value = '';
+  document.getElementById('new-wa').value = '';
+}
+
+function bukaEditAnggota(i) {
+  editIndex = i;
+  const a = anggotaList[i];
+  document.getElementById('modal-anggota-title').textContent = '✏️ Edit Anggota';
+  document.getElementById('btn-simpan-anggota').textContent = 'Simpan Perubahan';
+  document.getElementById('new-nama').value = a.nama;
+  document.getElementById('new-wa').value = a.wa;
+  // set select
+  const sel = document.getElementById('new-gen');
+  for (let o of sel.options) { if (o.value === a.gen || o.text === a.gen) { sel.value = o.value; break; } }
+  openModal('modal-anggota');
+}
+
+function hapusAnggota(i) {
+  const nama = anggotaList[i].nama;
+  if (!confirm(`Hapus anggota "${nama}"?\nTindakan ini tidak bisa dibatalkan.`)) return;
+  anggotaList.splice(i, 1);
+  renderAnggota();
+  updateStats();
+  showToast('🗑️ Anggota berhasil dihapus!');
+}
+
+// ===== FORUM =====
+let editForumIdx = null;
+
+function renderForum() {
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  const html = forumData.length === 0
+    ? '<div style="padding:2rem;text-align:center;color:var(--teks2);">Belum ada postingan</div>'
+    : forumData.map((p,i) => {
+      const canEdit = isAdmin || p.user === currentUser.nama;
+      return `
+    <div class="post-card">
+      <div class="post-header" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="avatar" style="background:${WARNA[i%WARNA.length]};width:36px;height:36px;font-size:12px;">${inisial(p.user)}</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;">${p.user}</div>
+            <div style="font-size:11px;color:var(--teks2);">${p.waktu}</div>
+          </div>
+        </div>
+        ${canEdit ? `<div style="display:flex;gap:4px;">
+          <button class="btn-edit" onclick="bukaEditForum(${i})" title="Edit">✏️</button>
+          <button class="btn-hapus" onclick="hapusForum(${i})" title="Hapus">🗑️</button>
+        </div>` : ''}
+      </div>
+      <div class="post-body">${p.isi}</div>
+      <div style="padding:0 14px 8px;">
+        ${p.komentar.map((k,ki)=>`
+          <div style="background:var(--hijau-light);border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:4px;color:var(--teks2);display:flex;justify-content:space-between;align-items:center;">
+            <span>💬 ${k}</span>
+            ${canEdit ? `<button onclick="hapusKomentar(${i},${ki})" style="background:none;border:none;cursor:pointer;font-size:11px;color:#c62828;">✕</button>` : ''}
+          </div>`).join('')}
+      </div>
+      <div class="post-actions">
+        <button class="post-action-btn ${p.liked?'liked':''}" onclick="likePost(${i})">❤️ ${p.likes}</button>
+        <button class="post-action-btn" onclick="komentarPost(${i})">💬 Komentar</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('forum-posts').innerHTML = html;
+}
+
+function bukaEditForum(i) {
+  editForumIdx = i;
+  document.getElementById('edit-forum-isi').value = forumData[i].isi;
+  openModal('modal-edit-forum');
+}
+
+function simpanEditForum() {
+  const isi = document.getElementById('edit-forum-isi').value.trim();
+  if (!isi) return showToast('Isi postingan tidak boleh kosong!');
+  forumData[editForumIdx].isi = isi;
+  forumData[editForumIdx].waktu += ' (diedit)';
+  editForumIdx = null;
+  closeModal('modal-edit-forum');
+  renderForum();
+  showToast('✅ Postingan berhasil diperbarui!');
+}
+
+function hapusForum(i) {
+  if (!confirm(`Hapus postingan dari "${forumData[i].user}"?`)) return;
+  forumData.splice(i, 1);
+  renderForum();
+  updateStats();
+  showToast('🗑️ Postingan berhasil dihapus!');
+}
+
+function hapusKomentar(postIdx, komIdx) {
+  if (!confirm('Hapus komentar ini?')) return;
+  forumData[postIdx].komentar.splice(komIdx, 1);
+  renderForum();
+  showToast('🗑️ Komentar dihapus!');
+}
+
+function likePost(i) {
+  forumData[i].liked = !forumData[i].liked;
+  forumData[i].likes += forumData[i].liked ? 1 : -1;
+  renderForum();
+}
+
+function komentarPost(i) {
+  const k = prompt('Tulis komentar:');
+  if (k && k.trim()) { forumData[i].komentar.push(k.trim()); renderForum(); showToast('Komentar ditambahkan!'); }
+}
+
+function postForum() {
+  const isi = document.getElementById('forum-input').value.trim();
+  if (!isi) return showToast('Tulis sesuatu dulu ya!');
+  forumData.unshift({ user: currentUser.nama, waktu: 'Baru saja', isi, likes: 0, liked: false, komentar: [] });
+  document.getElementById('forum-input').value = '';
+  renderForum();
+  updateStats();
+  showToast('✅ Postingan berhasil dikirim!');
+}
+
+// ===== ARISAN =====
+let editArisanIdx = null;
+
+function renderArisan() {
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  // show/hide tambah button
+  const adminBtn = document.getElementById('arisan-admin-btn');
+  if (adminBtn) adminBtn.style.display = isAdmin ? 'flex' : 'none';
+
+  document.getElementById('arisan-list').innerHTML = arisanData.length === 0
+    ? '<div style="padding:1rem;text-align:center;color:var(--teks2);">Belum ada peserta arisan</div>'
+    : arisanData.map((a,i) => `
+    <div class="arisan-item">
+      <div>
+        <div style="font-weight:600;font-size:13px;">${a.nama}</div>
+        <div style="font-size:11px;color:var(--teks2);">Iuran: Rp ${(a.iuran||100000).toLocaleString('id-ID')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="status-badge status-${a.status}">${a.status==='lunas'?'✅ Lunas':'⏳ Belum'}</span>
+        ${isAdmin ? `
+        <button class="btn-edit" onclick="editArisan(${i})" title="Edit">✏️</button>
+        <button class="btn-hapus" onclick="hapusArisan(${i})" title="Hapus">🗑️</button>` : ''}
+      </div>
+    </div>`).join('');
+
+  // Modal admin list (kelola arisan modal)
+  const adminEl = document.getElementById('arisan-admin-list');
+  if (adminEl) adminEl.innerHTML = arisanData.map((a,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--hijau-light);">
+      <span style="font-size:13px;">${a.nama}</span>
+      <button onclick="toggleArisan(${i})" class="status-badge status-${a.status}" style="border:none;cursor:pointer;">${a.status==='lunas'?'✅ Lunas':'⏳ Belum'}</button>
+    </div>`).join('');
+}
+
+function toggleArisan(i) { arisanData[i].status = arisanData[i].status==='lunas'?'belum':'lunas'; renderArisan(); }
+
+function editArisan(i) {
+  editArisanIdx = i;
+  const a = arisanData[i];
+  document.getElementById('modal-arisan-title2').textContent = '✏️ Edit Peserta Arisan';
+  document.getElementById('btn-simpan-arisan').textContent = 'Simpan Perubahan';
+  document.getElementById('new-arisan-nama').value = a.nama;
+  document.getElementById('new-arisan-status').value = a.status;
+  openModal('modal-tambah-arisan');
+}
+
+function hapusArisan(i) {
+  if (!confirm(`Hapus peserta "${arisanData[i].nama}" dari daftar arisan?`)) return;
+  arisanData.splice(i, 1);
+  renderArisan();
+  showToast('🗑️ Peserta arisan dihapus!');
+}
+
+function simpanArisan() {
+  const nama   = document.getElementById('new-arisan-nama').value.trim();
+  const status = document.getElementById('new-arisan-status').value;
+  if (!nama) return showToast('Nama tidak boleh kosong!');
+  if (editArisanIdx !== null) {
+    arisanData[editArisanIdx] = { ...arisanData[editArisanIdx], nama, status };
+    showToast('✅ Data arisan diperbarui!');
+  } else {
+    arisanData.push({ nama, status, iuran: 100000 });
+    showToast('✅ Peserta arisan ditambahkan!');
+  }
+  tutupModalArisan();
+  renderArisan();
+}
+
+function tutupModalArisan() {
+  editArisanIdx = null;
+  document.getElementById('modal-arisan-title2').textContent = '➕ Tambah Peserta Arisan';
+  document.getElementById('btn-simpan-arisan').textContent = 'Simpan';
+  document.getElementById('new-arisan-nama').value = '';
+  closeModal('modal-tambah-arisan');
+}
+
+// ===== KEUANGAN =====
+let editTransIdx = null;
+
+function renderTransaksi() {
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  // show/hide + Transaksi button
+  const adminBtn = document.getElementById('admin-tambah-trans-btn');
+  if (adminBtn) {
+    adminBtn.innerHTML = isAdmin
+      ? '<button class="btn-primary" onclick="openModal(\'modal-trans\')" style="white-space:nowrap;">+ Transaksi</button>'
+      : '';
+  }
+
+  document.getElementById('trans-list').innerHTML = transaksiData.length === 0
+    ? '<div style="padding:1rem;text-align:center;color:var(--teks2);">Belum ada transaksi</div>'
+    : transaksiData.map((t,i) => `
+    <div class="trans-item">
+      <div class="trans-left">
+        <div class="trans-icon ${t.jenis}">${t.jenis==='masuk'?'⬆️':'⬇️'}</div>
+        <div>
+          <div class="trans-desc">${t.ket}</div>
+          <div class="trans-date">${t.tgl}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="trans-amount ${t.jenis}">${t.jenis==='masuk'?'+':'-'}Rp ${t.jml.toLocaleString('id-ID')}</div>
+        ${isAdmin ? `
+        <button class="btn-edit" onclick="editTransaksi(${i})" title="Edit">✏️</button>
+        <button class="btn-hapus" onclick="hapusTransaksi(${i})" title="Hapus">🗑️</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function editTransaksi(i) {
+  editTransIdx = i;
+  const t = transaksiData[i];
+  document.getElementById('modal-trans-title').textContent = '✏️ Edit Transaksi';
+  document.getElementById('btn-simpan-trans').textContent = 'Simpan Perubahan';
+  document.getElementById('new-jenis').value = t.jenis;
+  document.getElementById('new-ket').value   = t.ket;
+  document.getElementById('new-jml').value   = t.jml;
+  openModal('modal-trans');
+}
+
+function hapusTransaksi(i) {
+  if (!confirm(`Hapus transaksi "${transaksiData[i].ket}"?\nTindakan ini tidak bisa dibatalkan.`)) return;
+  transaksiData.splice(i, 1);
+  renderTransaksi();
+  updateStats();
+  showToast('🗑️ Transaksi berhasil dihapus!');
+}
+
+function simpanTransaksi() {
+  const jenis = document.getElementById('new-jenis').value;
+  const ket   = document.getElementById('new-ket').value.trim();
+  const jml   = parseInt(document.getElementById('new-jml').value)||0;
+  if (!ket||!jml) return showToast('Lengkapi data transaksi!');
+  const d = new Date();
+  const bln = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+  const tgl = d.getDate()+' '+bln[d.getMonth()]+' '+d.getFullYear();
+
+  if (editTransIdx !== null) {
+    transaksiData[editTransIdx] = { jenis, ket, jml, tgl: transaksiData[editTransIdx].tgl };
+    showToast('✅ Transaksi berhasil diperbarui!');
+  } else {
+    transaksiData.unshift({ jenis, ket, jml, tgl });
+    showToast('✅ Transaksi berhasil ditambahkan!');
+  }
+  tutupModalTrans();
+  renderTransaksi();
+  updateStats();
+}
+
+function tutupModalTrans() {
+  editTransIdx = null;
+  document.getElementById('modal-trans-title').textContent = '💰 Tambah Transaksi';
+  document.getElementById('btn-simpan-trans').textContent = 'Simpan';
+  document.getElementById('new-ket').value = '';
+  document.getElementById('new-jml').value = '';
+  closeModal('modal-trans');
+}
+
+// backward compat alias
+function tambahTransaksi() { simpanTransaksi(); }
+
+// ===== KALENDER =====
+let kalenderData = [
+  { nama: 'Halal Bihalal Keluarga Besar', tgl: '2025-05-15', lok: 'Kediaman Pak Haji, Jakarta Timur', kat: 'badge-green', katLabel: 'Wajib Hadir' },
+  { nama: 'Pengajian Rutin Bulanan',       tgl: '2025-05-22', lok: 'Masjid Al-Ikhlas, Bekasi',        kat: 'badge-gold',  katLabel: 'Rutin' },
+  { nama: 'Arisan Keluarga',               tgl: '2025-06-10', lok: 'Rumah Ibu Siti, Depok',           kat: 'badge-gold',  katLabel: 'Arisan' },
+  { nama: 'Reuni Keluarga Tahunan',        tgl: '2025-08-17', lok: 'Gedung Serbaguna, Bogor',         kat: 'badge-green', katLabel: 'Besar' },
+];
+let editAcaraIdx = null;
+const BLN = ['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGS','SEP','OKT','NOV','DES'];
+const WARNA_ACARA = ['#1a6b3c','#c9a84c','#e53935','#1565c0','#6a1b9a','#00695c'];
+
+function renderKalender() {
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  const adminBtn = document.getElementById('kalender-admin-btn');
+  if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none';
+
+  const sorted = [...kalenderData].sort((a,b) => new Date(a.tgl) - new Date(b.tgl));
+  document.getElementById('kalender-list').innerHTML = sorted.length === 0
+    ? '<div style="padding:1rem;text-align:center;color:var(--teks2);">Belum ada acara</div>'
+    : sorted.map((a) => {
+      const realIdx = kalenderData.indexOf(a);
+      const d = new Date(a.tgl + 'T00:00:00');
+      const warna = WARNA_ACARA[realIdx % WARNA_ACARA.length];
+      return `
+      <div class="event-item" style="align-items:center;">
+        <div class="event-date-box" style="background:${warna};flex-shrink:0;">
+          <div class="eday">${d.getDate()}</div>
+          <div class="emon">${BLN[d.getMonth()]}</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div class="event-title">${a.nama}</div>
+          <div class="event-loc">📍 ${a.lok}</div>
+          <span class="event-badge ${a.kat}">${a.katLabel}</span>
+        </div>
+        ${isAdmin ? `<div style="display:flex;gap:4px;flex-shrink:0;">
+          <button class="btn-edit" onclick="editAcara(${realIdx})" title="Edit">✏️</button>
+          <button class="btn-hapus" onclick="hapusAcara(${realIdx})" title="Hapus">🗑️</button>
+        </div>` : ''}
+      </div>`;
+    }).join('');
+}
+
+function openModalAcara() {
+  editAcaraIdx = null;
+  document.getElementById('modal-acara-title').textContent = '📅 Tambah Acara';
+  document.getElementById('btn-simpan-acara').textContent = 'Simpan';
+  document.getElementById('new-acara').value = '';
+  document.getElementById('new-tanggal').value = '';
+  document.getElementById('new-lokasi').value = '';
+  openModal('modal-acara');
+}
+
+function editAcara(i) {
+  editAcaraIdx = i;
+  const a = kalenderData[i];
+  document.getElementById('modal-acara-title').textContent = '✏️ Edit Acara';
+  document.getElementById('btn-simpan-acara').textContent = 'Simpan Perubahan';
+  document.getElementById('new-acara').value   = a.nama;
+  document.getElementById('new-tanggal').value = a.tgl;
+  document.getElementById('new-lokasi').value  = a.lok;
+  const sel = document.getElementById('new-acara-kat');
+  for (let o of sel.options) { if (o.value === a.kat) { sel.value = o.value; break; } }
+  openModal('modal-acara');
+}
+
+function hapusAcara(i) {
+  if (!confirm(`Hapus acara "${kalenderData[i].nama}"?`)) return;
+  kalenderData.splice(i, 1);
+  renderKalender();
+  showToast('🗑️ Acara berhasil dihapus!');
+}
+
+function simpanAcara() {
+  const nama = document.getElementById('new-acara').value.trim();
+  const tgl  = document.getElementById('new-tanggal').value;
+  const lok  = document.getElementById('new-lokasi').value.trim();
+  const kat  = document.getElementById('new-acara-kat').value;
+  const katLabelMap = { 'badge-green': 'Wajib Hadir', 'badge-gold': 'Rutin' };
+  const katLabel = document.getElementById('new-acara-kat').options[document.getElementById('new-acara-kat').selectedIndex].text;
+  if (!nama || !tgl) return showToast('Nama dan tanggal wajib diisi!');
+
+  if (editAcaraIdx !== null) {
+    kalenderData[editAcaraIdx] = { nama, tgl, lok: lok||'TBD', kat, katLabel };
+    showToast('✅ Acara berhasil diperbarui!');
+  } else {
+    kalenderData.push({ nama, tgl, lok: lok||'TBD', kat, katLabel });
+    showToast('✅ Acara berhasil ditambahkan!');
+  }
+  tutupModalAcara();
+  renderKalender();
+}
+
+function tutupModalAcara() {
+  editAcaraIdx = null;
+  document.getElementById('modal-acara-title').textContent = '📅 Tambah Acara';
+  document.getElementById('btn-simpan-acara').textContent = 'Simpan';
+  closeModal('modal-acara');
+}
+
+// backward compat
+function tambahAcara() { simpanAcara(); }
+
+// ===== PENGUMUMAN =====
+function kirimPengumuman() {
+  const judul = document.getElementById('new-judul-p').value.trim();
+  const isi   = document.getElementById('new-isi-p').value.trim();
+  if (!judul||!isi) return showToast('Lengkapi judul dan isi!');
+  const newHtml = `
+    <div style="padding:10px;background:var(--hijau-light);border-radius:8px;border-left:3px solid var(--hijau);margin-bottom:8px;">
+      <b style="font-size:13px;">${judul}</b>
+      <p style="font-size:12px;color:var(--teks2);margin-top:3px;">${isi}</p>
+    </div>`;
+  document.getElementById('pengumuman-list').insertAdjacentHTML('afterbegin', newHtml);
+  closeModal('modal-pengumuman');
+  showToast('✅ Pengumuman berhasil dikirim!');
+  document.getElementById('new-judul-p').value = '';
+  document.getElementById('new-isi-p').value   = '';
+}
+
+// ===== GALERI =====
+function renderGaleri() {
+  document.getElementById('galeri-grid').innerHTML = galeriData.map((g,i)=>`
+    <div class="galeri-item" onclick="openLightbox('${g.url}')">
+      <img src="${g.url}" alt="${g.label}" loading="lazy" />
+      <div class="galeri-label">${g.label}</div>
+    </div>`).join('');
+}
+
+function uploadFoto(input) {
+  const files = Array.from(input.files);
+  let done = 0;
+  files.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      galeriData.unshift({ url: e.target.result, label: f.name.replace(/\.[^.]+$/,'') });
+      done++;
+      if (done === files.length) { renderGaleri(); showToast('✅ '+files.length+' foto berhasil diupload!'); }
+    };
+    reader.readAsDataURL(f);
+  });
+  input.value = '';
+}
+
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+// ===== PDF =====
+function downloadPDF() {
+  if (!window.jspdf) return showToast('Memuat jsPDF, coba lagi sebentar...');
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const masuk  = transaksiData.filter(t=>t.jenis==='masuk').reduce((a,t)=>a+t.jml,0);
+  const keluar = transaksiData.filter(t=>t.jenis==='keluar').reduce((a,t)=>a+t.jml,0);
+  const saldo  = masuk - keluar;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16); doc.setTextColor(26,107,60);
+  doc.text("LAPORAN KEUANGAN", 105, 18, {align:'center'});
+  doc.setFontSize(13);
+  doc.text("Keluarga Besar H. Si'ing Bin Bateng", 105, 27, {align:'center'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9); doc.setTextColor(120,120,120);
+  doc.text("Dicetak: "+new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}), 105, 34, {align:'center'});
+  doc.setDrawColor(201,168,76); doc.setLineWidth(0.8);
+  doc.line(14,38,196,38);
+
+  doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(26,107,60);
+  doc.text("Ringkasan Kas", 14, 48);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(50,50,50);
+  doc.text("Total Kas Masuk   : Rp "+masuk.toLocaleString('id-ID'),  14, 57);
+  doc.text("Total Kas Keluar  : Rp "+keluar.toLocaleString('id-ID'), 14, 65);
+  doc.setFont('helvetica','bold');
+  doc.text("Saldo Bersih      : Rp "+saldo.toLocaleString('id-ID'),  14, 73);
+  doc.setDrawColor(200,200,200); doc.setLineWidth(0.3);
+  doc.line(14,78,196,78);
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(26,107,60);
+  doc.text("Riwayat Transaksi", 14, 88);
+  doc.setFontSize(9); doc.setTextColor(80,80,80);
+  doc.text("No",  14, 98); doc.text("Keterangan",28,98); doc.text("Tanggal",120,98);
+  doc.text("Jenis",152,98); doc.text("Jumlah (Rp)",196,98,{align:'right'});
+  doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+
+  let y = 107;
+  transaksiData.forEach((t,i) => {
+    if (y > 270) { doc.addPage(); y = 20; }
+    if (i%2===0) { doc.setFillColor(245,250,247); doc.rect(13,y-5,184,9,'F'); }
+    doc.text(String(i+1), 14, y);
+    doc.text(t.ket.substring(0,40), 28, y);
+    doc.text(t.tgl, 120, y);
+    t.jenis==='masuk' ? doc.setTextColor(26,107,60) : doc.setTextColor(180,50,0);
+    doc.text(t.jenis==='masuk'?'Masuk':'Keluar', 152, y);
+    doc.setTextColor(50,50,50);
+    doc.text(t.jml.toLocaleString('id-ID'), 196, y, {align:'right'});
+    y += 9;
+  });
+
+  doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(150,150,150);
+  doc.text("Dokumen otomatis — Sistem Informasi Keluarga Besar H. Si'ing Bin Bateng", 105, 287, {align:'center'});
+  doc.save("Laporan_Keuangan_Keluarga_SiingBinBateng.pdf");
+  showToast('✅ Laporan PDF berhasil diunduh!');
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id==='modal-arisan') renderArisan();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); });
+});
+
+// ===== MODAL ANGGOTA RESET =====
+function tutupModalAnggota() {
+  editIndex = null;
+  document.getElementById("modal-anggota-title").textContent = "0001F464 TAMBAH ANGGOTA";
+  DOCUMENT.GETELEMENTBYID("BTN-SIMPAN-ANGGOTA").TEXTCONTENT = "SIMPAN";
+  DOCUMENT.GETELEMENTBYID("NEW-NAMA").VALUE = "";
+  DOCUMENT.GETELEMENTBYID("NEW-WA").VALUE = "";
+  CLOSEMODAL("MODAL-ANGGOTA");
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
